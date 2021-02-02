@@ -10,22 +10,27 @@ array_input = [ [100, 1], [100, 1], [550, 3], [650, 1], [950, 3]]
 # input for Galze via Bisc type of cooking
 #array_input = [ [100, 1], [100, 1], [550, 3], [650, 1], [1220, 5], [1220, 20.0/60]]
 
-def time_to_str(time):
-    if time - int(time) > 0:
-        diff = time - int(time)
-        time = time - diff
-        return  "%u:%u" % ( int(time), int(60*diff))
+def update_line(hl, new_data):
+    hl.set_xdata(np.append(hl.get_xdata(), new_data))
+    hl.set_ydata(np.append(hl.get_ydata(), new_data))
+    plt.draw()
+
+def time_to_str(t):
+    if t - int(t) > 0:
+        diff = t - int(t)
+        t = t - diff
+        return  "%u:%u" % ( int(t), int(60*diff))
     else:
-        return  "%u" % ( int(time))
+        return  "%u" % ( int(t))
 
 def PreparePlot(TempratureAndTimeList):
-    time = [0]
+    t = [0]
     for line in array_input:
         currTime = line[1]
-        time.append(time[len(time)-1] + currTime)
+        t.append(t[len(t)-1] + currTime)
     temprature = [0]
     temprature = temprature + [ line[0] for line in array_input]
-    return (time, temprature)
+    return (t, temprature)
 
 def ConvertFromTempratureAndTime2TempratureRate(StartingTemprature, GoalTemprature, TimeToGetThere):
     TempratureRate = (1.0*(GoalTemprature - StartingTemprature))/TimeToGetThere
@@ -58,7 +63,7 @@ plt.figure(1)
 plt.title('Bisc')
 (timeList, tempratureList) = PreparePlot(array_input)
 plt.plot(timeList, tempratureList)
-plt.xlabel('Time (hr)')
+plt.xlabel('t (hr)')
 plt.ylabel('Temprature (C)')
 plt.yticks(tempratureList, [str(c) for c in tempratureList])
 x = [ time_to_str(c) for c in timeList]
@@ -70,9 +75,9 @@ for temprature in tempratureList:
         plt.axhline(temprature, color='gray', linewidth=0.5)
 
 prevTime = None
-for time in timeList:
-    if prevTime != time and time != 0:
-        plt.axvline(time, color='gray', linewidth=0.5)
+for t in timeList:
+    if prevTime != t and t != 0:
+        plt.axvline(t, color='gray', linewidth=0.5)
 
 columns = ('Rate', 'GoalTemprature', 'HoldTime')
 cell_text = []
